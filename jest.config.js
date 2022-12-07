@@ -1,5 +1,8 @@
 module.exports = {
   roots: ['<rootDir>/tests'],
+  setupFiles: [
+    "<rootDir>/tests/config/index.ts"
+  ],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/main/**'
@@ -8,10 +11,10 @@ module.exports = {
   coverageProvider: 'babel',
   testEnvironment: 'node',
   transform: {
-    '.+\\.ts$': 'ts-jest'
+    ".(ts|tsx)": ["ts-jest", { compiler: "ttypescript" }]
   },
   moduleNameMapper: {
     '@/tests/(.*)': '<rootDir>/tests/$1',
     '@/(.*)': '<rootDir>/src/$1'
   }
-};
+}

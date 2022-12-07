@@ -10,7 +10,12 @@
     "paths": {
       "@/tests/*": ["../tests/*"],
       "@/*": ["*"]
+    },
+    "plugins": [{
+      "transform": "ts-auto-mock/transformer",
+      "cacheBetweenTests": false
     }
+  ],
   },
   "include": ["src", "tests"],
   "exclude": []
