@@ -1,1 +1,1 @@
-export * from './get-user-by-email.repository';
+export * from './user.repository';

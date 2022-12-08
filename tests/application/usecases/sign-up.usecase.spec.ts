@@ -2,29 +2,25 @@ import { createMock } from 'ts-auto-mock';
 
 import { SingUpUseCase } from '@/application/usecases';
 import { UserAlreadyExists } from '@/application/exceptions';
-import { GetUserByEmailRepository } from '@/application/repositories';
+import { UserRepository } from '@/application/repositories';
 
 import { dataFakerUser } from '@/tests/domain/user.data-faker';
 
-type SutTypes = {
-  sut: SingUpUseCase
-  getUsersRepository: GetUserByEmailRepository
-};
+const makeSut = () => {
+  const userRepository = createMock<UserRepository>();
+  const getUserByEmailSpy = jest.spyOn(userRepository, 'getUserByEmail').mockReturnValue(null);
 
-const makeSut = (): SutTypes => {
-  const getUsersRepository = createMock<GetUserByEmailRepository>();
-
-  const sut = new SingUpUseCase();
+  const sut = new SingUpUseCase(userRepository);
 
   return {
     sut,
-    getUsersRepository
+    getUserByEmailSpy
   };
 };
 
 describe('SignUp Usecase', () => {
-  test('Should throw if email exists', async () => {
-    const { sut } = makeSut();
+  test('Should call get user repository with correct value', async () => {
+    const { sut, getUserByEmailSpy } = makeSut();
 
     const {
       email,
@@ -32,10 +28,27 @@ describe('SignUp Usecase', () => {
       password
     } = dataFakerUser();
 
-    const testScript = async () => sut.execute({
+    await sut.execute({
       email,
       name,
       password
+    });
+
+    expect(getUserByEmailSpy).toBeCalledTimes(1);
+    expect(getUserByEmailSpy).toBeCalledWith(email);
+  });
+
+  test('Should throw if email exists', async () => {
+    const { sut, getUserByEmailSpy } = makeSut();
+
+    const user = dataFakerUser();
+
+    getUserByEmailSpy.mockResolvedValueOnce(user);
+
+    const testScript = async () => sut.execute({
+      email: user.email,
+      name: user.name,
+      password: user.password
     });
 
     await expect(testScript).rejects.toThrow(UserAlreadyExists);
