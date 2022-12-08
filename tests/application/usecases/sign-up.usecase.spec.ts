@@ -102,4 +102,28 @@ describe('SignUp Usecase', () => {
     expect(getUserByEmailSpy).toBeCalledWith(email);
     expect(encryptSpy).toBeCalledWith(password);
   });
+
+  test('Should throw if getUserRepository throws', async () => {
+    const { sut, getUserByEmailSpy, encryptSpy } = makeSut();
+
+    const {
+      email,
+      name,
+      password
+    } = dataFakerUser();
+
+    encryptSpy.mockImplementationOnce(throwError);
+
+    const testScript = async () => sut.execute({
+      email,
+      name,
+      password
+    });
+
+    await expect(testScript).rejects.toThrow();
+
+    expect(getUserByEmailSpy).toBeCalledTimes(1);
+    expect(getUserByEmailSpy).toBeCalledWith(email);
+    expect(encryptSpy).toBeCalledWith(password);
+  });
 });
