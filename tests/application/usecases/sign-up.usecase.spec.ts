@@ -25,7 +25,7 @@ const makeSut = () => {
 };
 
 describe('SignUp Usecase', () => {
-  test('Should call getUserRepository with correct value', async () => {
+  test('Should call getUserByEmailRepository with correct value', async () => {
     const { sut, getUserByEmailSpy } = makeSut();
 
     const {
@@ -44,7 +44,7 @@ describe('SignUp Usecase', () => {
     expect(getUserByEmailSpy).toBeCalledWith(email);
   });
 
-  test('Should throw if getUserRepository throws', async () => {
+  test('Should throw if getUserByEmailRepository throws', async () => {
     const { sut, getUserByEmailSpy } = makeSut();
 
     const {
