@@ -1,3 +1,4 @@
+import { UserAlreadyExists } from '../exceptions/user-already-exists.exception';
 
 export interface ISingUpUseCase {
   execute: (ISingUpUseCase: ISingUpUseCase.Params) => ISingUpUseCase.Response
@@ -14,7 +15,9 @@ export namespace ISingUpUseCase {
 }
 
 export class SingUpUseCase implements ISingUpUseCase {
-  async execute (ISingUpUseCase: ISingUpUseCase.Params): Promise<ISingUpUseCase.Response> {
-    throw new Error('Email já cadastrado.');
+  async execute (params: ISingUpUseCase.Params): Promise<ISingUpUseCase.Response> {
+    throw new UserAlreadyExists({
+      email: params.email
+    });
   }
 }

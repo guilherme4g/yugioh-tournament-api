@@ -4,6 +4,7 @@ import { SingUpUseCase } from '@/application/usecases';
 import { GetUserByEmailRepository } from '@/application/repositories';
 
 import { dataFakerUser } from '@/tests/domain/user.data-faker';
+import { UserAlreadyExists } from '@/application/exceptions/user-already-exists.exception';
 
 type SutTypes = {
   sut: SingUpUseCase
@@ -31,12 +32,12 @@ describe('SignUp Usecase', () => {
       password
     } = dataFakerUser();
 
-    const testScript = () => sut.execute({
+    const testScript = async () => sut.execute({
       email,
       name,
       password
     });
 
-    await expect(testScript).rejects.toThrow();
+    await expect(testScript).rejects.toThrow(UserAlreadyExists);
   });
 });

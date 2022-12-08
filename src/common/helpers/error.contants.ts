@@ -1,0 +1,8 @@
+export enum ExceptionType {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+  SYSTEM = 'SYSTEM',
+  FORBIDDEN = 'FORBIDDEN',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  UNKNOWN = 'UNKNOWN',
+}
