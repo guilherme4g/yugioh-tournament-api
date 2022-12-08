@@ -1,3 +1,7 @@
+import * as uuid from 'uuid';
+
+import { User } from '@/domain/user';
+
 import { Encrypter } from '../protocols';
 import { UserRepository } from '../repositories';
 import { UserAlreadyExists } from '../exceptions';
@@ -28,7 +32,15 @@ export class SingUpUseCase implements ISingUpUseCase {
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const hashPassWord = this.encrypter.encrypt(params.password);
+
+    const user = new User({
+      id: uuid.v4(),
+      email: params.email,
+      name: params.name,
+      password: hashPassWord
+    });
+
+    await this.userRepository.create(user);
   }
 }
