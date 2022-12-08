@@ -1,5 +1,6 @@
-import { UserAlreadyExists } from '../exceptions';
+import { Encrypter } from '../protocols';
 import { UserRepository } from '../repositories';
+import { UserAlreadyExists } from '../exceptions';
 
 export interface ISingUpUseCase {
   execute: (ISingUpUseCase: ISingUpUseCase.Params) => ISingUpUseCase.Response
@@ -16,7 +17,7 @@ export namespace ISingUpUseCase {
 }
 
 export class SingUpUseCase implements ISingUpUseCase {
-  constructor (private readonly userRepository: UserRepository) {}
+  constructor (private readonly userRepository: UserRepository, private readonly encrypter: Encrypter) {}
 
   async execute (params: ISingUpUseCase.Params): Promise<ISingUpUseCase.Response> {
     const userAlreadyExists = this.userRepository.getUserByEmail(params.email);
@@ -26,5 +27,8 @@ export class SingUpUseCase implements ISingUpUseCase {
         email: params.email
       });
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const hashPassWord = this.encrypter.encrypt(params.password);
   }
 }
