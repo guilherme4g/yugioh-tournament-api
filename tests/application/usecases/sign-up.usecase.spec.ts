@@ -1,10 +1,10 @@
 import { createMock } from 'ts-auto-mock';
 
 import { SingUpUseCase } from '@/application/usecases';
+import { UserAlreadyExists } from '@/application/exceptions';
 import { GetUserByEmailRepository } from '@/application/repositories';
 
 import { dataFakerUser } from '@/tests/domain/user.data-faker';
-import { UserAlreadyExists } from '@/application/exceptions/user-already-exists.exception';
 
 type SutTypes = {
   sut: SingUpUseCase

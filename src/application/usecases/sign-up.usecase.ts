@@ -1,4 +1,4 @@
-import { UserAlreadyExists } from '../exceptions/user-already-exists.exception';
+import { UserAlreadyExists } from '../exceptions';
 
 export interface ISingUpUseCase {
   execute: (ISingUpUseCase: ISingUpUseCase.Params) => ISingUpUseCase.Response
