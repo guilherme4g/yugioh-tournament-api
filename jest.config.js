@@ -1,7 +1,7 @@
 module.exports = {
   roots: ['<rootDir>/tests'],
   setupFiles: [
-    "<rootDir>/tests/config/index.ts"
+    "<rootDir>/tests/common/config/index.ts"
   ],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
