@@ -1,8 +1,9 @@
 import { createMock } from 'ts-auto-mock';
 
-import { SingUpUseCase } from '@/application/usecases';
-import { UserAlreadyExists } from '@/application/exceptions';
 import { UserRepository } from '@/application/repositories';
+import { UserAlreadyExists } from '@/application/exceptions';
+import { Encrypter } from '@/application/protocols';
+import { SingUpUseCase } from '@/application/usecases';
 
 import { dataFakerUser } from '@/tests/domain/user.data-faker';
 
@@ -10,11 +11,15 @@ const makeSut = () => {
   const userRepository = createMock<UserRepository>();
   const getUserByEmailSpy = jest.spyOn(userRepository, 'getUserByEmail').mockReturnValue(null);
 
-  const sut = new SingUpUseCase(userRepository);
+  const encrypter = createMock<Encrypter>();
+  const encryptSpy = jest.spyOn(encrypter, 'encrypt');
+
+  const sut = new SingUpUseCase(userRepository, encrypter);
 
   return {
     sut,
-    getUserByEmailSpy
+    getUserByEmailSpy,
+    encryptSpy
   };
 };
 
@@ -52,5 +57,25 @@ describe('SignUp Usecase', () => {
     });
 
     await expect(testScript).rejects.toThrow(UserAlreadyExists);
+  });
+
+  test('Should call encrypter correct value', async () => {
+    const { sut, getUserByEmailSpy, encryptSpy } = makeSut();
+
+    const {
+      email,
+      name,
+      password
+    } = dataFakerUser();
+
+    await sut.execute({
+      email,
+      name,
+      password
+    });
+
+    expect(getUserByEmailSpy).toBeCalledTimes(1);
+    expect(getUserByEmailSpy).toBeCalledWith(email);
+    expect(encryptSpy).toBeCalledWith(password);
   });
 });
