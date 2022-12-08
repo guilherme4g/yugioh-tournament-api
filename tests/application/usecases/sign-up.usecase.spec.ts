@@ -5,7 +5,8 @@ import { UserAlreadyExists } from '@/application/exceptions';
 import { Encrypter } from '@/application/protocols';
 import { SingUpUseCase } from '@/application/usecases';
 
-import { dataFakerUser } from '@/tests/domain/user.data-faker';
+import { dataFakerUser } from '@/tests/domain/user.data.faker';
+import { throwError } from '@/tests/common/helpers';
 
 const makeSut = () => {
   const userRepository = createMock<UserRepository>();
@@ -24,7 +25,7 @@ const makeSut = () => {
 };
 
 describe('SignUp Usecase', () => {
-  test('Should call get user repository with correct value', async () => {
+  test('Should call getUserRepository with correct value', async () => {
     const { sut, getUserByEmailSpy } = makeSut();
 
     const {
@@ -38,6 +39,29 @@ describe('SignUp Usecase', () => {
       name,
       password
     });
+
+    expect(getUserByEmailSpy).toBeCalledTimes(1);
+    expect(getUserByEmailSpy).toBeCalledWith(email);
+  });
+
+  test('Should throw if getUserRepository throws', async () => {
+    const { sut, getUserByEmailSpy } = makeSut();
+
+    const {
+      email,
+      name,
+      password
+    } = dataFakerUser();
+
+    getUserByEmailSpy.mockImplementationOnce(throwError);
+
+    const testScript = async () => sut.execute({
+      email,
+      name,
+      password
+    });
+
+    await expect(testScript).rejects.toThrow();
 
     expect(getUserByEmailSpy).toBeCalledTimes(1);
     expect(getUserByEmailSpy).toBeCalledWith(email);
@@ -59,7 +83,7 @@ describe('SignUp Usecase', () => {
     await expect(testScript).rejects.toThrow(UserAlreadyExists);
   });
 
-  test('Should call encrypter correct value', async () => {
+  test('Should call encrypter with correct value', async () => {
     const { sut, getUserByEmailSpy, encryptSpy } = makeSut();
 
     const {
