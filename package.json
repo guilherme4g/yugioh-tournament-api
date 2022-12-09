@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@types/uuid": "^9.0.0",
+    "joi": "^17.7.0",
     "uuid": "^9.0.0"
   }
 }
