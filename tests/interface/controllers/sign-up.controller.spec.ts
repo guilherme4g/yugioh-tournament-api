@@ -42,6 +42,25 @@ describe('SignUp Controller', () => {
     expect(validateSpy).toBeCalledWith(params);
   });
 
+  test('Should return 400 if validation fails', async () => {
+    const { sut, validateSpy, singUpUseCaseSpy } = makeSut();
+
+    const { id, ...params } = dataFakerUser();
+
+    validateSpy.mockReturnValueOnce(new Error());
+
+    const result = await sut.handle({
+      email: params.email,
+      name: params.name,
+      password: params.password
+    });
+
+    expect(validateSpy).toBeCalledTimes(1);
+    expect(validateSpy).toBeCalledWith(params);
+    expect(singUpUseCaseSpy).toBeCalledTimes(0);
+    expect(result.statusCode).toBe(400);
+  });
+
   test('Should call SingUpUseCase with correct values', async () => {
     const { sut, validateSpy, singUpUseCaseSpy } = makeSut();
 
@@ -81,7 +100,7 @@ describe('SignUp Controller', () => {
 
     const { id, ...params } = dataFakerUser();
 
-    await sut.handle({
+    const result = await sut.handle({
       email: params.email,
       name: params.name,
       password: params.password
@@ -91,5 +110,6 @@ describe('SignUp Controller', () => {
     expect(validateSpy).toBeCalledWith(params);
     expect(singUpUseCaseSpy).toBeCalledTimes(1);
     expect(singUpUseCaseSpy).toBeCalledWith(params);
+    expect(result.statusCode).toBe(201);
   });
 });
