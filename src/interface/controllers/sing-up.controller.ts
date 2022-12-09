@@ -23,7 +23,7 @@ export class SingUpController implements ISingUpController {
     const hasError = this.validation.validate(request);
 
     if (hasError) {
-      badRequest(hasError);
+      return badRequest(hasError);
     }
 
     try {
