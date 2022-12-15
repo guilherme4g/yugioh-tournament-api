@@ -4,7 +4,7 @@ import { createMock } from 'ts-auto-mock';
 import { User } from '@/domain/user';
 import { IUserRepository } from '@/application/repositories';
 import { UserAlreadyExists } from '@/application/exceptions';
-import { Encrypter } from '@/application/protocols';
+import { Hasher } from '@/application/protocols';
 import { SingUpUseCase } from '@/application/usecases';
 
 import { dataFakerUser } from '@/tests/domain/user.data.faker';
@@ -18,16 +18,16 @@ const makeSut = () => {
   const getUserByEmailSpy = jest.spyOn(userRepository, 'getUserByEmail').mockReturnValue(null);
   const createUserSpy = jest.spyOn(userRepository, 'create').mockReturnValue(null);
 
-  const encrypter = createMock<Encrypter>();
-  const encryptSpy = jest.spyOn(encrypter, 'encrypt');
+  const hasher = createMock<Hasher>();
+  const hashSpy = jest.spyOn(hasher, 'hash');
 
-  const sut = new SingUpUseCase(userRepository, encrypter);
+  const sut = new SingUpUseCase(userRepository, hasher);
 
   return {
     sut,
     getUserByEmailSpy,
     createUserSpy,
-    encryptSpy
+    hashSpy
   };
 };
 
@@ -95,7 +95,7 @@ describe('SignUp Usecase', () => {
   });
 
   test('Should call encrypter with correct value', async () => {
-    const { sut, getUserByEmailSpy, encryptSpy } = makeSut();
+    const { sut, getUserByEmailSpy, hashSpy } = makeSut();
 
     const {
       email,
@@ -111,11 +111,11 @@ describe('SignUp Usecase', () => {
 
     expect(getUserByEmailSpy).toBeCalledTimes(1);
     expect(getUserByEmailSpy).toBeCalledWith(email);
-    expect(encryptSpy).toBeCalledWith(password);
+    expect(hashSpy).toBeCalledWith(password);
   });
 
   test('Should throw if getUserRepository throws', async () => {
-    const { sut, getUserByEmailSpy, encryptSpy } = makeSut();
+    const { sut, getUserByEmailSpy, hashSpy } = makeSut();
 
     const {
       email,
@@ -123,7 +123,7 @@ describe('SignUp Usecase', () => {
       password
     } = dataFakerUser();
 
-    encryptSpy.mockImplementationOnce(throwError);
+    hashSpy.mockImplementationOnce(throwError);
 
     const testScript = async () => sut.execute({
       email,
@@ -135,11 +135,11 @@ describe('SignUp Usecase', () => {
 
     expect(getUserByEmailSpy).toBeCalledTimes(1);
     expect(getUserByEmailSpy).toBeCalledWith(email);
-    expect(encryptSpy).toBeCalledWith(password);
+    expect(hashSpy).toBeCalledWith(password);
   });
 
   test('Should call createUserRepository with correct value', async () => {
-    const { sut, encryptSpy, getUserByEmailSpy, createUserSpy } = makeSut();
+    const { sut, hashSpy, getUserByEmailSpy, createUserSpy } = makeSut();
 
     const {
       email,
@@ -147,7 +147,7 @@ describe('SignUp Usecase', () => {
       password
     } = dataFakerUser();
 
-    encryptSpy.mockReturnValueOnce('any_hashed_password');
+    hashSpy.mockReturnValueOnce('any_hashed_password');
     mockUuid.v4.mockReturnValue('any_id');
 
     await sut.execute({
@@ -158,8 +158,8 @@ describe('SignUp Usecase', () => {
 
     expect(getUserByEmailSpy).toBeCalledTimes(1);
     expect(getUserByEmailSpy).toBeCalledWith(email);
-    expect(encryptSpy).toBeCalledTimes(1);
-    expect(encryptSpy).toBeCalledWith(password);
+    expect(hashSpy).toBeCalledTimes(1);
+    expect(hashSpy).toBeCalledWith(password);
     expect(createUserSpy).toBeCalledTimes(1);
     expect(createUserSpy).toBeCalledWith(new User({ id: 'any_id', email, name, password: 'any_hashed_password' }));
   });

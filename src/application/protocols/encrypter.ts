@@ -1,3 +1,3 @@
-export interface Encrypter {
-  encrypt: (plainText: string) => string
+export interface Hasher {
+  hash: (plainText: string) => string
 }

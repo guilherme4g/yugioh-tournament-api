@@ -2,7 +2,7 @@ import * as uuid from 'uuid';
 
 import { User } from '@/domain/user';
 
-import { Encrypter } from '../protocols';
+import { Hasher } from '../protocols';
 import { IUserRepository } from '../repositories';
 import { UserAlreadyExists } from '../exceptions';
 
@@ -21,7 +21,7 @@ export namespace ISingUpUseCase {
 }
 
 export class SingUpUseCase implements ISingUpUseCase {
-  constructor (private readonly userRepository: IUserRepository, private readonly encrypter: Encrypter) {}
+  constructor (private readonly userRepository: IUserRepository, private readonly hasher: Hasher) {}
 
   async execute (params: ISingUpUseCase.Params): Promise<ISingUpUseCase.Response> {
     const userAlreadyExists = this.userRepository.getUserByEmail(params.email);
@@ -32,7 +32,7 @@ export class SingUpUseCase implements ISingUpUseCase {
       });
     }
 
-    const hashPassWord = this.encrypter.encrypt(params.password);
+    const hashPassWord = this.hasher.hash(params.password);
 
     const user = new User({
       id: uuid.v4(),
