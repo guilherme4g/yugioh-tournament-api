@@ -2,7 +2,7 @@ import * as uuid from 'uuid';
 import { createMock } from 'ts-auto-mock';
 
 import { User } from '@/domain/user';
-import { UserRepository } from '@/application/repositories';
+import { IUserRepository } from '@/application/repositories';
 import { UserAlreadyExists } from '@/application/exceptions';
 import { Encrypter } from '@/application/protocols';
 import { SingUpUseCase } from '@/application/usecases';
@@ -14,7 +14,7 @@ const mockUuid: any = uuid;
 jest.mock('uuid');
 
 const makeSut = () => {
-  const userRepository = createMock<UserRepository>();
+  const userRepository = createMock<IUserRepository>();
   const getUserByEmailSpy = jest.spyOn(userRepository, 'getUserByEmail').mockReturnValue(null);
   const createUserSpy = jest.spyOn(userRepository, 'create').mockReturnValue(null);
 

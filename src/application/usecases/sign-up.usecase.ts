@@ -3,7 +3,7 @@ import * as uuid from 'uuid';
 import { User } from '@/domain/user';
 
 import { Encrypter } from '../protocols';
-import { UserRepository } from '../repositories';
+import { IUserRepository } from '../repositories';
 import { UserAlreadyExists } from '../exceptions';
 
 export interface ISingUpUseCase {
@@ -21,7 +21,7 @@ export namespace ISingUpUseCase {
 }
 
 export class SingUpUseCase implements ISingUpUseCase {
-  constructor (private readonly userRepository: UserRepository, private readonly encrypter: Encrypter) {}
+  constructor (private readonly userRepository: IUserRepository, private readonly encrypter: Encrypter) {}
 
   async execute (params: ISingUpUseCase.Params): Promise<ISingUpUseCase.Response> {
     const userAlreadyExists = this.userRepository.getUserByEmail(params.email);
